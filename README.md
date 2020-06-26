@@ -48,3 +48,6 @@ With this in hand, open the notebook, add your information and run it.
 
 1. I developed this meal planner to help me transition into a more vegetarian diet, for that reason a meal is defined as 2 side dishes, or 1 main dish.
 2. The mealplanner assumes you'll have a side dish (a hearty salad or rice or dal) for each meal outside of the menu.
+
+### Known Issues
+- groupby sum action yields weird results but only for some values.
