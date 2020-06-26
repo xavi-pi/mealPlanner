@@ -7,7 +7,7 @@ given a database of recipes where each recipe is labeled for
 * number of servings and
 * whether it is a side dish or a main dish
 
-the program will generate a menu for X number of days for Y number of people, then send an email using Gmail API with the menu and a shopping list for that menu.
+the program will generate a menu for X number of days for Y number of people (given by you), then send an email using Gmail API with the menu and a shopping list for that menu.
 
 
 ## Recipe Data Requirement
