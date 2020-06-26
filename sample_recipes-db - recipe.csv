@@ -1,0 +1,8 @@
+recipe_id,name,portions,source,side_dish,main_dish,serve_warm,serve_cold,last_served
+0,poached veggies with mayo,4,plenty - p 12,TRUE,FALSE,TRUE,TRUE,01/01/2020
+1,carrot salad,4,plenty - p 14,TRUE,FALSE,TRUE,TRUE,06/28/2020
+2,roasted veggies,4,plenty - p 16,TRUE,FALSE,TRUE,FALSE,06/28/2020
+3,two potato vindaloo,4,plenty - p 18,TRUE,FALSE,TRUE,FALSE,01/01/2020
+4,potato salad,4,plenty - p 20,TRUE,FALSE,TRUE,TRUE,06/28/2020
+5,surprise tatin,4,plenty - p 22,TRUE,TRUE,TRUE,FALSE,01/01/2020
+6,veggie tempura,4,plenty - p 29,TRUE,TRUE,TRUE,FALSE,06/28/2020
