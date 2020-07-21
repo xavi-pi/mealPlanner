@@ -56,5 +56,9 @@ With this in hand, open the notebook, add your information and run it.
 1. There will always be salad and or soup.
 1.1 A meal is Salad + 2 Side Dishes, or Salad + 1 Main Dish
 
+
+## Thanks
+- Google API [https://github.com/googleapis/googleapis]
+
 ### Known Issues
 - groupby sum action yields weird results but only for some values.
