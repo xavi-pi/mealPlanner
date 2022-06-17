@@ -1,15 +1,15 @@
 # Meal Planner and Shopping List Generator
 ### by Xavi Pi
 
-The goal of this program is quite simple:
+This program
 
 given:
 * a database of recipes where each recipe is labeled for
     * number of servings and
     * whether it is a side dish or a main dish
 
-the program will generate:
-* a menu for X number of days for Y number of people (given by you)
+ought to:
+* create a menu for X number of days for Y number of people (given by you)
 * create a shopping list for those dishes
 * send the menu and a shopping list to your email using Gmail API
 
