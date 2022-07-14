@@ -3,7 +3,7 @@
 import unittest
 import pandas as pd
 import pandas.testing as pd_testing
-from ..mealPlanner.recipe_commons import scale_recipe
+from ..main.recipe_commons import scale_recipe
 
 TEST_ING_DATA = './test/test_recipe_ingredients.csv'
 TEST_ING_DF = pd.read_csv(TEST_ING_DATA)
