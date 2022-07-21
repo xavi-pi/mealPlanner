@@ -5,6 +5,7 @@ import numpy as np
 import random
 from datetime import date, datetime
 from collections import defaultdict
+from recipe_commons import scale_recipe
 
 
 Y = 2000  # dummy leap year to allow input X-02-29 (leap day)
@@ -42,17 +43,25 @@ def create_menu(recipe_ids: list) -> pd.DataFrame:
     return menu_df
 
 
-def gather_ingredients(recipe_ids: list) -> pd.DataFrame:
+def gather_ingredients(recipe_ids: list, no_people: int) -> pd.DataFrame:
     # group ingredients by recipe
     grouped_ingredients = pd.read_excel('main/recipes.xlsx', sheet_name='recipe_ingredients')
-    grouped_ingredients = grouped_ingredients[grouped_ingredients['recipe_id'].isin(recipe_ids)]
+    # get ingredients
+    grouped_ingredients = []
+    for recipe in recipe_ids:
+        recipe_ing = grouped_ingredients[grouped_ingredients['recipe_id'] == recipe]
+        # get no_servings
+        recipe_serving = pd.read_excel('main/recipes.xlsx', sheet_name='recipe')
+        recipe_serving = recipe_serving[recipe_serving['recipe_id' == recipe]]['portions']
+        recipe_serving = reecipe_serving.value()
+        # scale recipe
+        recipe_ing = scale_recipe(recipe_ing, recipe_serving, no_people)
+        grouped_ingredients = grouped_ingredients.append(recipe_ing)
     # add repeated ingredients
-    menu_ingredients = grouped_ingredients.groupby(['measurement_id','ingredient_name', 'recipe_id']).sum()
+    menu_ingredients = grouped_ingredients.groupby(['measurement_id', 'ingredient_name', 'recipe_id']).sum()
     menu_ingredients = menu_ingredients.reset_index()
     ingredients_df = pd.read_excel('main/recipes.xlsx', sheet_name='ingredients')
     menu_ingredients = pd.merge(menu_ingredients, ingredients_df, how='inner', on = 'ingredient_name')
-    menu_ingredients['measurement_qty'].replace(' ', np.nan, inplace=True)
-    menu_ingredients.dropna(subset=['measurement_qty'], inplace=True)
     return menu_ingredients
 
 
@@ -60,18 +69,20 @@ def gather_ingredients(recipe_ids: list) -> pd.DataFrame:
 # i.e. half a garlic leftover is not the same as half a fish
 def calc_leftovers(menu: pd.DataFrame) -> pd.DataFrame:
     leftovers_df = menu[menu['pantry'] == False][['ingredient_name', 'measurement_qty']]
-    leftovers_df['measurement_qty'].replace('', np.nan, inplace=True)
+    leftovers_df['measurement_qty'].replace(' ', np.nan, inplace=True)
     leftovers_df.dropna(subset=['measurement_qty'], inplace=True)
     leftovers_df['measurement_qty'] = leftovers_df['measurement_qty'].astype(float)
     leftovers_df['qty_rounded'] = leftovers_df['measurement_qty'].apply(np.ceil)
     leftovers_qty = leftovers_df['qty_rounded'].sum() - leftovers_df['measurement_qty'].sum()
     return leftovers_qty
 
+
 def is_whole(d):
     """Whether or not d is a whole number."""
     return isinstance(d, int) or (isinstance(d, float) and d.is_integer())
 
-def select_recipes(no_recipes:int, base_recipe:float) -> list:
+
+def select_recipes(no_recipes: int, base_recipe: float, no_people: int) -> list:
     if no_recipes == 1:
         return [base_recipe]
     else:
@@ -85,7 +96,7 @@ def select_recipes(no_recipes:int, base_recipe:float) -> list:
             menu.append(base_recipe)
         menus_dict = defaultdict(list)
         for menu in possible_menu_combo:
-            ingredients = gather_ingredients(menu)
+            ingredients = gather_ingredients(menu, no_people)
             menu_lefover = calc_leftovers(ingredients)
             menus_dict[menu_lefover].append(str(menu))
         least_leftover_qty = min(list(menus_dict.keys()))
