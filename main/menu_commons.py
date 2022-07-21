@@ -3,9 +3,15 @@
 import pandas as pd
 import numpy as np
 import random
+import logging
 from datetime import date, datetime
 from collections import defaultdict
 from recipe_commons import scale_recipe
+
+# set up logger
+fmt_str = '[%(asctime)s] %(levelname)s @ line %(lineno)d: %(message)s'
+logging.basicConfig(level=logging.INFO, format=fmt_str)
+logger = logging.getLogger(__name__)
 
 
 Y = 2000  # dummy leap year to allow input X-02-29 (leap day)
@@ -29,7 +35,7 @@ def select_one_recipe() -> int:
     current_season = get_season(date.today())
     seasons = [current_season, 'all-year']
     # crop df
-    recipe_df = pd.read_excel('main/recipes.xlsx', sheet_name='recipe')
+    recipe_df = pd.read_excel('./recipes.xlsx', sheet_name='recipe')
     recipe_df = recipe_df[recipe_df['season'].isin(seasons)]
     # select recipe
     id_lst = recipe_df.recipe_id.tolist()
@@ -38,29 +44,33 @@ def select_one_recipe() -> int:
 
 
 def create_menu(recipe_ids: list) -> pd.DataFrame:
-    menu_df = pd.read_excel('main/recipes.xlsx', sheet_name='recipe')
+    menu_df = pd.read_excel('./recipes.xlsx', sheet_name='recipe')
+    menu_df = menu_df.dropna(how='all').dropna(axis=1, how='all')
     menu_df = menu_df[menu_df['recipe_id'].isin(recipe_ids)]
     return menu_df
 
 
 def gather_ingredients(recipe_ids: list, no_people: int) -> pd.DataFrame:
     # group ingredients by recipe
-    grouped_ingredients = pd.read_excel('main/recipes.xlsx', sheet_name='recipe_ingredients')
+    all_recipes_ing = pd.read_excel('./recipes.xlsx', sheet_name='recipe_ingredients')
+    recipe_serving_df = pd.read_excel('./recipes.xlsx', sheet_name='recipe')
     # get ingredients
     grouped_ingredients = []
     for recipe in recipe_ids:
-        recipe_ing = grouped_ingredients[grouped_ingredients['recipe_id'] == recipe]
+        logger.debug(f"gathering ingredients for recipe {recipe}")
+        recipe = int(float(recipe))
+        recipe_ing = all_recipes_ing[all_recipes_ing['recipe_id'] == recipe]
         # get no_servings
-        recipe_serving = pd.read_excel('main/recipes.xlsx', sheet_name='recipe')
-        recipe_serving = recipe_serving[recipe_serving['recipe_id' == recipe]]['portions']
-        recipe_serving = reecipe_serving.value()
+        recipe_serving = recipe_serving_df[recipe_serving_df['recipe_id'] == recipe]['portions']
+        recipe_serving = recipe_serving.astype(int).values[0]
         # scale recipe
         recipe_ing = scale_recipe(recipe_ing, recipe_serving, no_people)
-        grouped_ingredients = grouped_ingredients.append(recipe_ing)
+        grouped_ingredients.append(recipe_ing)
+    grouped_ingredients = pd.concat(grouped_ingredients, axis=0)
     # add repeated ingredients
     menu_ingredients = grouped_ingredients.groupby(['measurement_id', 'ingredient_name', 'recipe_id']).sum()
     menu_ingredients = menu_ingredients.reset_index()
-    ingredients_df = pd.read_excel('main/recipes.xlsx', sheet_name='ingredients')
+    ingredients_df = pd.read_excel('./recipes.xlsx', sheet_name='ingredients')
     menu_ingredients = pd.merge(menu_ingredients, ingredients_df, how='inner', on = 'ingredient_name')
     return menu_ingredients
 
@@ -88,12 +98,14 @@ def select_recipes(no_recipes: int, base_recipe: float, no_people: int) -> list:
     else:
         seasons = [get_season(date.today()), 'all-year']
         # crop df
-        recipe_df = pd.read_excel('main/recipes.xlsx', sheet_name='recipe')
+        recipe_df = pd.read_excel('./recipes.xlsx', sheet_name='recipe')
         recipe_df = recipe_df[recipe_df['season'].isin(seasons)]
-        possible_recipes = recipe_df['recipe_id'].tolist()
+        # create possible recipe combination
+        possible_recipes = recipe_df[recipe_df.recipe_id != base_recipe]['recipe_id'].tolist()
         possible_menu_combo = [random.sample(possible_recipes, no_recipes-1) for _ in range(7)]
         for menu in possible_menu_combo:
             menu.append(base_recipe)
+        # look for recipe with least waste
         menus_dict = defaultdict(list)
         for menu in possible_menu_combo:
             ingredients = gather_ingredients(menu, no_people)
@@ -101,5 +113,7 @@ def select_recipes(no_recipes: int, base_recipe: float, no_people: int) -> list:
             menus_dict[menu_lefover].append(str(menu))
         least_leftover_qty = min(list(menus_dict.keys()))
         least_leftover_menus = menus_dict[least_leftover_qty]
+        # transform menu back to list of float
         least_leftover_menu = random.choice(least_leftover_menus).strip('][').split(', ')
+        least_leftover_menu = [float(i) for i in least_leftover_menu]
         return least_leftover_menu

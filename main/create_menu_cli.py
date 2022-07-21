@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 class CreateMenuCli:
 
     def __init__(self, day_count:int, no_people:int, lunch_too:bool):
-        self.days = days
+        self.days = day_count
         self.no_people = no_people
         self.lunch_too = lunch_too
         self.menu, self.recipes = self.create_menu()
@@ -34,7 +34,7 @@ class CreateMenuCli:
         else:
             logger.info("Menu will not include lunch")
 
-        menu_recipes = mc.select_recipes(no_recipe, self.select_base_recipe, self.no_people)
+        menu_recipes = mc.select_recipes(no_recipe, self.select_base_recipe(), self.no_people)
         menu_df = mc.create_menu(menu_recipes)
         return [menu_df, menu_recipes]
 
