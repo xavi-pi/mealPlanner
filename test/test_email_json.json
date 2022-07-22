@@ -1,0 +1,8 @@
+{
+    "recipients_email_list": [
+        "adenipx@gmail.com",
+        "test@blah.com"
+    ],
+    "body": "../email_archive/menu_email_template_20220722.html",
+    "subject_line": "Food Ideas for 20220722"
+}
