@@ -14,7 +14,7 @@ ought to:
 * send the menu and a shopping list to your email using Gmail API
 
 ## Inspiration
-Meal planning is a pain, but it has many benefits. Given a database of favorite recipes, we should be able to generate a menu. But given a recipes and a list of ingredients in those recipes, then we should be able to generate menus and shopping lists to make meal planning each week a breeze. 
+Meal planning is a pain, but it has many benefits. Given a database of favorite recipes, we should be able to generate a menu. But given a recipes and a list of ingredients in those recipes, then we should be able to generate menus and shopping lists to make meal planning each week a breeze.
 
 ## Data Requirement
 
@@ -41,9 +41,7 @@ Note: google sheets is not a requirement. You could simply load the data from a 
 
 > Once the database is complete. To run the program, you'll need
 
-- Jupyter Notebooks
-- Google API Permissions
-    - Sheets API enabled
+- Python 3.X
 - Secondary Password for GMail account
     - app specific password
 

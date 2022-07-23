@@ -47,15 +47,15 @@ def create_email_json(recipients_email_list: list, body_path: str, subject_line:
 
 def send_email(email_json: dict):
     # be sure to get password: https://support.google.com/accounts/answer/185833
-    gmail_user = '...@gmail.com'
-    gmail_password = 'XXXXXXXXXXXXX'
+    gmail_user = 'XXXXXX@gmail.com'
+    gmail_password = 'xxxxxxxxxxxxxxxx'
     # define receiver
     receiver_email = ', '.join(email_json['recipients_email_list'])
     # Create message container - the correct MIME type is multipart/alternative.
     message = MIMEMultipart('alternative')
     message['Subject'] = email_json["subject_line"]
     message['From'] = gmail_user
-    message['To'] = email_json['recipients_email_list']
+    message['To'] = receiver_email
 
     # Record the MIME types of both parts - text/plain and text/html.
     part1 = MIMEText(f""" """, 'plain')
@@ -73,12 +73,11 @@ def send_email(email_json: dict):
     # The email client will try to render the last part first
     message.attach(part1)
     message.attach(part2)
-
     # Create secure connection with server and send email
     context = ssl.create_default_context()
     try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-            server.login(gmail_user, password)
+            server.login(gmail_user, gmail_password)
             server.sendmail(
                 gmail_user, receiver_email, message.as_string()
             )
