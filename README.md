@@ -45,7 +45,9 @@ Note: google sheets is not a requirement. You could simply load the data from a 
 - Secondary Password for GMail account
     - app specific password
 
-With this in hand, open the notebook, add your information and run it.
+With this in hand, open the email_commons.py file add your gmail username and password, and run it.
+
+   python3 robot_sidekick.py -r adenipx@gmail.com -d 5 -p 10
 
 
 ## Notes
